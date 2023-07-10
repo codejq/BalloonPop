@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="0000"
+        android:dialogTitle="Fake Password"
+        android:key="fakePassword"
+        android:summary="Fake Password which will wipe the login data and  history and log you off form all websites "
+        android:title="Fake Password" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="Password "
+        android:key="loclPassword"
+        android:summary="The password you enter here will be required every time you open this App"
+        android:title="Password" />
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:dialogTitle="Main Url "
+        android:key="external_server"
+        android:summary="The password you enter here will be required every time you open this App"
+        android:title="Main Url" />
+
+
+
+</PreferenceScreen>

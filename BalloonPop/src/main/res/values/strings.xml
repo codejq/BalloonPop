@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="textOn">فعال</string>
+    <string name="textOff">مغلق</string>
+
+    <string name="app_name">Balloon Pop</string>
+    <string name="web_admin">ادارة ويب</string>
+    <string name="php_my_admin">أذهب phpMyAdmin</string>
+    <string name="sql_admin">SQL Admin</string>
+    <string name="extension">امتداد</string>
+    <string name="settings">الإعدادات</string>
+    <string name="close">اغلاق</string>
+    <string name="message">رسالة</string>
+    <string name="please_read_me">"<a href="http://piisoft.com/socialbook.php">Studio</a>تطبيق مخصص لتشغيل تطبيقات داخلية "</string>
+    <string name="shell_help"><strong>Welcome to the MySQL monitor!</strong>\n\nCommands end with ; or \\g.\nType \'help;\' or \'\\h\' for help.\n</string>
+    <string name="more_info">المزيد</string>
+    <string name="web_server">خادم الويب</string>
+    <string name="running">قيد التشغيل</string>
+    <string name="stopped">متوقف</string>
+    <string name="lighttpd_php_nginx">Nginx 1.5.11 - Lighttpd 1.4.34 - PHP 5.5.9</string>
+    <string name="lighttpd_php_desc">خادم التطبيقات</string>
+    <string name="db_server">خادم قاعدة البيانات</string>
+    <string name="mysql_desc">خادم التطبيقات</string>
+    <string name="device_status">حالة الجهاز</string>
+    <string name="none">---</string>
+    <string name="server_status">حالة الخادم</string>
+    <string name="web_server_not_running">خدمة الويب لا تعمل</string>
+    <string name="php_thread">PHP PROCS</string>
+    <string name="uptime">مدةالعمل</string>
+    <string name="port">منفذ</string>
+    <string name="curr_conn">CURR CONS</string>
+    <string name="total_conn">عدد الاتصالات</string>
+    <string name="traffic">نقل البيانات</string>
+    <string name="db_server_not_running">خادم قواعدة البيانات لا يعمل</string>
+    <string name="core_apps">التطبيقات الداخلية</string>
+    <string name="installed">نم التثبيت</string>
+    <string name="not_installed">غير مثبت</string>
+    <string name="core_apps_title">Lighttpd - PHP - MySQL - Msmtp</string>
+    <string name="core_apps_not_installed">لم يتم تثبيت التطبيقات الداخلية الرجاء اعادة تثبيت التطبيقات الداخلية ليعمل التطبيق بصورة صحيحة</string>
+
+    <string name="server_loading">جاري التنفيذ</string>
+    <string name="turning_on_server">جاري فتح الخادم ..</string>
+    <string name="turning_on_server_failed">حدث خطأ ما حاول مرة اخرى </string>
+    <string name="turning_off_server">جاري اغلاق الخادم ...</string>
+    <string name="turning_off_server_failed">حدث خطأ ما ..</string>
+    <string name="install_failed">حدث خطأ ماء قم باعدة تثبيت الاستديو</string>
+    <string name="updating_core_apps">تحديث التطبيقات الداخلية</string>
+    <string name="update_failed">حدث خطأ الرجاء اعادة تثبيت الاستديو</string>
+    <string name="uninstalling_core_apps">ازالة التطبيقات الداخلية ...</string>
+    <string name="uninstall_failed">حدث خطأ الرجاء اعادة تثبيت الاستديو</string>
+
+    <string name="confirm">تأكيد</string>
+    <string name="confirm_exit">خروج</string>
+
+    <string name="please_wait">الرجاء الانتظار</string>
+    <string name="lighttpd_config">اعدادات  Lighttpd</string>
+    <string name="php_config">PHP إعدادات</string>
+    <string name="mysql_config">MySQL إعدادات</string>
+    <string name="msmtp_config">Msmtp اعدادات</string>
+    <string name="exception_msg">حدث خطأ ماء قم باعدة تثبيت الاستديو</string>
+    <string name="save">حفظ</string>
+    <string name="saved_successfully">تم حفظ الإعدادات بنجاح</string>
+    <string name="cancel">الغاء</string>
+    <string name="password_changed">تم تغيير كلمة المرور</string>
+    <string name="core_install">هل انت متأكد من تثبيت التطبيقات الداخلية </string>
+    <string name="core_uninstall">هل انت متأكد من ازالة التطبيقات الداخلية من النظام</string>
+
+    <string name="core_uninstalling">إزالة التثبيت ..</string>
+    <string name="yes">نعم</string>
+    <string name="no">لا</string>
+    <string name="web_db_server_is_running">الخوادم تعمل ..</string>
+    <string name="web_server_is_running">خدمة الويب تعمل</string>
+    <string name="db_server_is_running">خادم قواعدة البيانات يعمل</string>
+    <string name="core_apps_installed">تم تثبيت التطبيقات الداخلية بنجاح </string>
+    <string name="core_apps_uninstalled">تم الغاء تثبيت التطبيقات الداخلية بنجاح</string>
+    <string name="install">تثبيت</string>
+    <string name="dont_install">"لا تقم بالتثبيت"</string>
+    <string name="about_app">ان هذا التطبيق مجهود سنوات طويلة ومضنية من العمل لفريق من المطوريين نأمل منك كمستفيد من التطبيق ان
+تراعي هذا المجهود العظيم وساعات العمل الطويلة والشاقة من القائمين على التطبيق وعدم استخدام الهندسة العكسية
+للاعتداء على حقوق استخدام التطبيق
+شكر خاص للشركات التي ساهمت في خروج هذا التطبيق الي النور ونخص منهم مشاريع
+ <br/>
+ <a href="http://actionbarsherlock.com">ActionBarSherlock</a>,<a href="http://ankri.de"> SwitchCompatLibrary</a>,
+ <br/>
+ <a href="http://developer.android.com/design/downloads/index.html">Action Bar Icon Pack</a>,
+ <br/>
+ <a href="http://lighttpd.net">Lighttpd</a>,<a href="http://php.net">PHP</a>,
+ <br/>
+ <a href="http://mysql.com">MySQL</a>, <a href="http://msmtp.sourceforge.net">MSMTP</a>, <a href="http://busybox.net">BUSYBOX</a> etc
+ <br/>
+ <br/>
+ المشارك الاساسي في التطبيق
+ <br/>
+ <a href="http://www.piisoft.com">
+ باي سوفت للبرمجيات
+ </a></string>
+    <string name="non_rooted_device">Your device no rooted to run port under 1024!</string>
+    <string name="detected_link2sd">تم اكتشاف تطبيق Link2SD</string>
+    <string name="detected_link2sd_text">ان جهازك مزود بتطبيق
+Link2SD
+يجب ازالة هذا التطبيق اولا </string>
+    <string name="mysql_result">SQL Result</string>
+
+
+    <!-- packages -->
+    <string name="package_info">معلومات الحزم</string>
+    <string name="package_detail" formatted="false">Name : %s\nSize : %s\nInstall : %s</string>
+
+    <!-- finder -->
+    <string name="finder_title">جاري التحميل</string>
+    <string name="finder_message">تحميل جميع الاعدادات</string>
+    <!-- command -->
+    <string name="command_executed">تم تنفيذ الامر</string>
+
+    <string name="feedback">تعليق</string>
+    <string name="welcome">صفحة البداية</string>
+    <string name="about_us_privacy_policy">سياسية الخصوصية</string>
+    <string name="about_us_rights">Copyright © Piisoft.com</string>
+    <string name="about_share_friends">مشاركة</string>
+    <string name="about_rate_me">قيم التطبيق على جوجل</string>
+
+	<string name="title_activity_home">سعودي عقار</string>
+	<string name="GoBack">الذهاب للأمام</string>
+	<string name="about">حول</string>
+	<string name="GoForward">العودة للخلف</string>
+	<string name="Refresh">تحديث</string>
+	<string name="sahre">مشاركة</string>
+	<string name="delete">حذف</string>
+	<string name="confirmExit">Are you sure you want to exit? </string>
+	<string name="Yes">Yes</string>
+	<string name="No">No</string>
+	<string name="exit">خروج</string>
+    <string name="GoHomePage">الرئيسية</string>
+    <string name="settings2">الاعدادات</string>
+    <string name="print">طباعة</string>
+    <string name="scanner">قارئ الباركود</string>
+    <string name="installing_core_apps">جاري تثبيت التطبيقات الداخلية ...</string>
+    <string name="mysql">MySQL 5.1.62</string>
+
+</resources>

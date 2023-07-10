@@ -1,0 +1,57 @@
+settings = {
+
+    splashScreen =
+    {
+        enable = false
+    },
+
+    orientation = {
+        default = "landscapeRight",
+        supported = { "landscapeRight", "landscapeLeft" }
+    },
+
+    excludeFiles =
+    {
+      all = { "Thumbs.db", "exclude/*", "*.tmp" },
+      iphone = { "icon-*dpi.png", "audio/*.ogg" },
+      android = { "Icon-*.png", "Icon-1024.jpg", "*@2x.png", "audio/*.m4a" }
+    },
+
+    iphone = {
+        xcassets = "Images.xcassets",
+        plist = {
+            NSPhotoLibraryUsageDescription = "Save images to photo album for use as wallpaper etc.",
+            MinimumOSVersion = "8.0",
+            ITSAppUsesNonExemptEncryption = false,
+            NSAppTransportSecurity =
+            {
+                NSAllowsArbitraryLoads = true,
+            },
+            UIViewControllerBasedStatusBarAppearance = false,
+            UIPrerenderedIcon = true
+        }
+    },
+
+	android =
+    {
+        usesPermissions =
+        {
+            "android.permission.WRITE_EXTERNAL_STORAGE",
+            "android.permission.VIBRATE",
+        },
+    },
+
+    plugins =
+    {
+        ["plugin.utf8"] =
+        {
+            publisherId = "com.coronalabs"
+        },
+    },
+
+    build =
+    {
+        neverStripDebugInfo = true
+    },
+
+}

@@ -1,0 +1,6 @@
+del /S /A "Resource\Levels\Thumbs.db"
+del /S /A "Resource\Images\Thumbs.db"
+del /S /A "Resource\Buttons\Thumbs.db"
+del /S /A "Themes\Thumbs.db"
+del /S /A "Classes\Widgets\theme_7\Thumbs.db"
+del /S /A "Thumbs.db"

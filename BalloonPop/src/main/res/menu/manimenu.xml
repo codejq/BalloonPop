@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/GoHomePage" android:id="@+id/GoHomePage" android:icon="@drawable/homeicon"/>
+    <item android:title="@string/GoBack" android:id="@+id/GoBack" android:icon="@drawable/back"/>
+    <item android:title="@string/GoForward" android:id="@+id/GoForward" android:icon="@drawable/go"/>
+    <item android:title="@string/Refresh" android:id="@+id/Refresh" android:icon="@drawable/refresh"/>
+    <item android:title="@string/print" android:id="@+id/print" android:icon="@drawable/print"/>
+    <item android:title="@string/settings2" android:id="@+id/settings2" android:icon="@drawable/settings2"/>
+    <item android:title="@string/scanner" android:id="@+id/scanner" android:icon="@drawable/scanner"/>
+        <item android:title="@string/about" android:id="@+id/About" android:icon="@drawable/about"/>
+     <item android:title="@string/exit" android:id="@+id/exit" android:icon="@drawable/exit"/>
+</menu>
