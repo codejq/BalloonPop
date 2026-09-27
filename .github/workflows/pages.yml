@@ -25,7 +25,7 @@ jobs:
         run: |
           WWW=BalloonPop/src/main/assets/www
           mkdir -p _site/assets/Resource/Sounds
-          cp $WWW/index.html $WWW/app.js $WWW/celebrate.js $WWW/style.css $WWW/celebrate.css $WWW/favicon.ico _site/
+          cp $WWW/index.html $WWW/app.js $WWW/agent-api.js $WWW/llms.txt $WWW/celebrate.js $WWW/style.css $WWW/celebrate.css $WWW/favicon.ico _site/
           cp $WWW/assets/clouds.jpg _site/assets/
           cp $WWW/assets/Resource/Sounds/{popup.wav,dino.mp3,evil.wav} _site/assets/Resource/Sounds/
           touch _site/.nojekyll

@@ -27,6 +27,24 @@ A cheerful balloon-popping game for kids. Smiling balloons float up through a sk
 |---|---|
 | ![Start screen](docs/screenshots/start.png) | ![Mobile](docs/screenshots/mobile.png) |
 
+## 🤖 Let AI agents play
+
+LLM agents (Claude computer use, browser-use, Playwright MCP, and others) can play Balloon Pop. The instructions for agents live at [`/llms.txt`](https://codejq.github.io/BalloonPop/llms.txt).
+
+**JavaScript API.** Run these in the page from any browser tool that can evaluate JS:
+
+```js
+BalloonPop.help();                 // API summary
+BalloonPop.start({ speed: 0.5 });  // start; speed < 1 slows the balloons for slower agents
+BalloonPop.getState();             // { status, score, timeLeft, balloons: [{ id, type, shouldPop, x, y, visible }] }
+BalloonPop.pop('balloon-7');       // pop one balloon -> { ok, type, points, score }
+BalloonPop.popAllSafe();           // pop every visible balloon that isn't evil
+```
+
+**DOM and accessibility tree.** Every balloon is `role="button"` with a unique `id`, a `data-type` (`normal` / `heart` / `evil`) and an `aria-label` such as *"Pop red balloon (+1 point)"* or *"Evil balloon - do NOT pop (-10 points)"*, so agents that click on screen can tell balloons apart.
+
+**Slow mode.** Open [`?speed=0.2`](https://codejq.github.io/BalloonPop/?speed=0.2) to slow the balloons down for agents that take a few seconds per action.
+
 ## Run it locally
 
 The web game is plain HTML, CSS and JavaScript with no build step and no dependencies:
@@ -47,6 +65,8 @@ BalloonPop/
 │       └── assets/www/              # ← the web game itself
 │           ├── index.html
 │           ├── app.js               # game loop, scoring, timer, explosions
+│           ├── agent-api.js         # window.BalloonPop API for AI agents
+│           ├── llms.txt             # instructions for AI agents
 │           ├── celebrate.js         # confetti on win
 │           ├── style.css / celebrate.css
 │           └── assets/              # background, sounds

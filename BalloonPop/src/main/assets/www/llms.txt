@@ -1,0 +1,33 @@
+# Balloon Pop
+
+> A browser game: smiling balloons float up the screen, you pop them for points. Agents can play by
+> clicking balloons like a human, or (recommended) through the JavaScript API on `window.BalloonPop`.
+
+## Rules
+- Press Start. You have 3 minutes.
+- Normal balloons and green heart balloons: +1 point. Pop them.
+- Evil balloons (red spiky outline, `data-type="evil"`): -10 points. Do NOT pop them.
+- Reach 150 points to win. Dropping below -100 points loses. Running out of time loses.
+- A balloon pops when the pointer hovers over it, clicks it or touches it, so move the mouse carefully.
+
+## JavaScript API (run in the page, e.g. with a browser tool's "evaluate JS")
+- `BalloonPop.help()`: prints this API summary.
+- `BalloonPop.start({speed: 0.2})`: starts a game. `speed` < 1 slows balloons down, which helps slow agents.
+- `BalloonPop.getState()`: returns `{status, score, timeLeft, balloons: [{id, type, color, shouldPop, x, y, visible}]}`.
+  `status` is one of `idle`, `playing`, `won`, `lost`. `x`/`y` are viewport coordinates of the balloon centre.
+- `BalloonPop.pop(id)`: pops one balloon and returns `{ok, type, points, score}`.
+- `BalloonPop.popAllSafe()`: pops every visible balloon that is not evil and returns the count.
+- `BalloonPop.setSpeed(n)`: sets the speed multiplier for new balloons.
+- `BalloonPop.stop()`: ends the game.
+
+A simple winning loop:
+    BalloonPop.start({speed: 0.5});
+    const t = setInterval(() => { BalloonPop.popAllSafe();
+      if (BalloonPop.getState().status !== 'playing') clearInterval(t); }, 500);
+
+## Playing without JavaScript (DOM / accessibility tree)
+- Start button: `#startGameBtn`.
+- Each balloon is `div.balloon[role=button]` with a unique `id`, `data-type` (`normal|heart|evil`) and an
+  `aria-label` such as "Pop red balloon (+1 point)" or "Evil balloon - do NOT pop (-10 points)".
+- Score: `#score`. Timer: `#clockTimer`.
+- Add `?speed=0.2` to the URL to slow the balloons down.

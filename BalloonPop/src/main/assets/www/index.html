@@ -8,9 +8,11 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="celebrate.css">
+  <link rel="help" type="text/plain" href="llms.txt" title="Instructions for AI agents">
  
 </head>
 <body>
+<p id="agentHelp" class="visually-hidden">AI agents: this game has a JavaScript API. Call window.BalloonPop.help() or read llms.txt. Pop every balloon except the evil ones.</p>
 <div id="celebrate" class="js-container container" > Congratulations Well Done </div>
 <div id="sorryTryAgain"   > X Sorry, Try Again </div>
 
@@ -47,6 +49,7 @@
 
   <script src="app.js"></script>
   <script src="celebrate.js"></script>
+  <script src="agent-api.js"></script>
  
 </body>
 </html>

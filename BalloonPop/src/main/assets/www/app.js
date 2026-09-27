@@ -82,6 +82,9 @@ const balloonsContainer = document.getElementById('balloons');
 const scoreContainer = document.getElementById('score');
 let score = 0;
 let maxBalloons = 10;
+let balloonCounter = 0;
+// Balloon speed multiplier (1 = normal). Lower it for slower players such as LLM agents: ?speed=0.2
+let gameSpeed = parseFloat(new URLSearchParams(location.search).get('speed')) || 1;
 
 const BALLOON_POP_SOUND = document.getElementById('popup0')
 BALLOON_POP_SOUND.volume = 0.4;
@@ -159,6 +162,16 @@ function createBalloon() {
 	const heartBalloon = getLowProbabilityRandom(30) && !evilBalloon? 'heartBalloon':'';
     balloon.className = `balloon balloon-${randomColor} ${evilBalloon}  ${heartBalloon}`;
     balloon.style.setProperty('--random', Math.random());
+    // Metadata so LLM agents / screen readers can identify balloons (see agent-api.js)
+    const type = evilBalloon ? 'evil' : heartBalloon ? 'heart' : 'normal';
+    balloon.id = 'balloon-' + (++balloonCounter);
+    balloon.dataset.type = type;
+    balloon.dataset.color = randomColor;
+    balloon.setAttribute('role', 'button');
+    balloon.setAttribute('aria-label', type === 'evil'
+      ? 'Evil balloon - do NOT pop (-10 points)'
+      : `Pop ${type === 'heart' ? 'heart' : randomColor} balloon (+1 point)`);
+    balloon.style.animationDuration = (7 / gameSpeed) + 's';
     balloon.addEventListener('animationend', () => {
       balloon.remove();
     });
