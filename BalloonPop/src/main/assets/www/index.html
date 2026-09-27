@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
-  <p id="agentHelp" class="visually-hidden">AI agents: this game has a JavaScript API. Call window.BalloonPop.help() or read llms.txt.</p>
+  <p id="agentHelp" class="visually-hidden">AI agents: open this page with ?agent=1 for turn-based play (the game waits for your moves). JavaScript API: window.BalloonPop.help(); WebMCP tools are registered when supported. Full guide: llms.txt.</p>
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
@@ -85,6 +85,7 @@
         <button class="prompt" id="prompt" data-i18n-title="tapToHear"></button>
         <div class="stats" id="stats" aria-live="polite"></div>
       </header>
+      <div class="agent-badge" id="agent-badge" role="status" hidden></div>
     </section>
   </main>
 

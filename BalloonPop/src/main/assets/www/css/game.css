@@ -250,6 +250,13 @@ h1 {
   .prompt .p-icon { width: 36px; height: 36px; }
 }
 
+.agent-badge {
+  position: absolute; left: 50%; bottom: calc(12px + var(--safe-b)); transform: translateX(-50%); z-index: 6;
+  padding: 8px 16px; border-radius: 999px; background: rgba(15, 23, 42, .78); color: #fff;
+  font-size: 15px; font-weight: 700; white-space: nowrap; pointer-events: none;
+}
+.agent-badge.running { background: rgba(22, 163, 74, .85); }
+
 /* balloons */
 .balloon {
   position: absolute; bottom: 0; width: var(--bw); height: calc(var(--bw) * 1.6);

@@ -18,6 +18,9 @@
   const progress = store.get('progress', {});      // progress[mode][level] = best stars (1-3)
   const SPEEDS = { slow: 0.65, normal: 1, fast: 1.35 };
   let speedOverride = parseFloat(params.get('speed')) || null;   // numeric speed for agents / tests
+  // Agent mode (?agent=1): turn-based play for AI agents. The game stays frozen while the agent
+  // thinks and runs for agent.step ms after each action (tap, click or API call). Hover-popping is off.
+  const agent = { on: params.get('agent') === '1', step: parseInt(params.get('step'), 10) || 1500 };
 
   // ------------------------------------------------------------ modes & levels
   const range = function (a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; };
@@ -181,7 +184,7 @@
       goal: Math.min(12, 5 + level * 2),
       target: null, correct: 0, mistakes: 0, score: 0, popped: 0,
       timeLeft: 180000, status: 'playing', spawnAcc: 99999, last: 0,
-      balloons: new Map(), lanes: []
+      balloons: new Map(), lanes: [], runUntil: performance.now() + 2500
     };
     stage.innerHTML = '';
     stage.classList.remove('paused');
@@ -209,7 +212,13 @@
     if (!G) return;
     const dt = G.last ? Math.min(100, now - G.last) : 16;
     G.last = now;
+    // Freeze only when the agent has something to act on, so it never stares at an empty sky.
+    const frozen = agent.on && G.status === 'playing' && now > G.runUntil && hasActionable();
     if (G.status === 'playing') {
+      stage.classList.toggle('paused', frozen);
+      renderAgentBadge(frozen);
+    }
+    if (G.status === 'playing' && !frozen) {
       G.spawnAcc += dt;
       const interval = (G.mode === 'freeplay' ? 480 : 1150) / speedMul();
       if (G.spawnAcc >= interval) { G.spawnAcc = 0; spawn(); }
@@ -220,6 +229,63 @@
       }
     }
     G.raf = requestAnimationFrame(tick);
+  }
+
+  // ------------------------------------------------------------ agent mode
+  // Where a balloon can be clicked: its centre, and whether that centre is on screen and not under the HUD.
+  function balloonSpot(b) {
+    const r = b.el.getBoundingClientRect();
+    const sr = stage.getBoundingClientRect();
+    const hud = document.querySelector('.hud').getBoundingClientRect();
+    const x = Math.round(r.left + r.width / 2);
+    const y = Math.round(r.top + r.width * 0.55);
+    let visible = x > sr.left && x < sr.right && y > Math.max(sr.top, hud.bottom) + 10 && y < sr.bottom - 10;
+    if (visible) {   // not hidden behind another balloon
+      const top = document.elementFromPoint(x, y);
+      visible = !!top && top.closest('.balloon') === b.el;
+    }
+    return { x: x, y: y, visible: visible };
+  }
+  function shouldPop(b) {
+    if (G.mode === 'freeplay') return b.kind !== 'evil';
+    return G.explore || (G.target != null && b.key === G.target);
+  }
+  function hasActionable() {
+    for (const b of G.balloons.values()) if (!b.popped && shouldPop(b) && balloonSpot(b).visible) return true;
+    return false;
+  }
+  function agentWake(ms) {
+    if (G) G.runUntil = Math.max(G.runUntil, performance.now() + (ms || agent.step));
+  }
+  stage.addEventListener('pointerdown', function () { if (agent.on) agentWake(); }, true);
+  $('#prompt').addEventListener('pointerdown', function () { if (agent.on) agentWake(); });
+  let badgeState = null;
+  function renderAgentBadge(frozen) {
+    const b = $('#agent-badge');
+    const st = agent.on ? (frozen ? 'frozen' : 'running') : 'off';
+    if (st === badgeState) return;
+    badgeState = st;
+    b.hidden = !agent.on;
+    b.textContent = frozen ? '🤖 Agent mode · paused, waiting for your move' : '🤖 Agent mode · running';
+    b.classList.toggle('running', !frozen);
+  }
+
+  function describeState() {
+    const s = window.BalloonGame.state();
+    if (s.status === 'menu') return 'Balloon Pop is on the ' + s.screen + ' screen. Start a game with BalloonPop.start({mode}) — modes: freeplay, colors, shapes, numbers, letters.';
+    const lines = [];
+    const modeName = s.mode + (s.learn ? ' (learn in order)' : s.explore ? ' (explore)' : s.level ? ' level ' + s.level : '');
+    lines.push('Mode: ' + modeName + '. Status: ' + s.status + (s.agentMode.frozen ? ' (frozen, waiting for your move)' : '') + '.');
+    if (s.mode === 'freeplay') lines.push('Score ' + s.score + ' / 150, ' + s.timeLeft + ' s left. Pop anything except evil balloons (-10).');
+    else if (s.explore) lines.push('Explore: pop any balloon to hear its name. Popped: ' + s.popped + '.');
+    else lines.push('Find: "' + s.target.word + '". Progress ' + s.correct + ' / ' + s.goal + ', misses ' + s.mistakes + '.');
+    const vis = s.balloons.filter(function (b) { return b.visible; });
+    lines.push(vis.length ? 'Balloons on screen (x, y = centre in CSS pixels):' : 'No balloons on screen yet — wait a moment (BalloonPop.step()).');
+    vis.forEach(function (b) {
+      const what = b.kind === 'evil' ? 'EVIL balloon' : b.kind === 'heart' ? 'heart balloon' : b.value != null ? b.color + ' balloon "' + b.value + '"' : b.color + ' balloon';
+      lines.push('- ' + b.id + ': ' + what + ' at (' + b.x + ', ' + b.y + ')' + (b.shouldPop ? '  <- POP' : b.kind === 'evil' ? '  <- AVOID' : ''));
+    });
+    return lines.join('\n');
   }
 
   // ------------------------------------------------------------ layout & balloons
@@ -295,7 +361,7 @@
     el.addEventListener('pointerdown', onPop);
     if (G.mode === 'freeplay') {
       // The original game pops balloons by hovering with the mouse.
-      el.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') onPop.call(el, e); });
+      el.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse' && !agent.on) onPop.call(el, e); });
     }
     el.addEventListener('animationend', function (e) {
       if (e.animationName === 'bp-rise') { el.remove(); if (G) G.balloons.delete(data.id); }
@@ -560,6 +626,7 @@
       return '<span class="' + (i <= stars ? 'on' : '') + '" style="animation-delay:' + (0.25 + i * 0.25) + 's">★</span>';
     }).join('');
 
+    renderAgentBadge(false); $('#agent-badge').hidden = true; badgeState = null;
     const finished = G;
     setTimeout(function () {
       if (G !== finished) return;   // a new game started in the meantime
@@ -702,32 +769,32 @@
     state: function () {
       const st = { screen: screen, language: settings.lang, speed: speedMul() };
       if (!G) return Object.assign(st, { status: 'menu' });
-      const sr = stage.getBoundingClientRect();
       return Object.assign(st, {
+        agentMode: { on: agent.on, step: agent.step, frozen: agent.on && G.status === 'playing' && performance.now() > G.runUntil && hasActionable() },
         status: G.status, mode: G.mode, level: G.level, explore: G.explore, learn: G.learn,
         target: G.target == null ? null : { key: G.target, word: describe(G.mode, G.target).word },
         score: G.score, goal: G.mode === 'freeplay' ? 150 : G.explore ? null : G.learn ? G.items.length : G.goal,
         correct: G.correct, mistakes: G.mistakes, popped: G.popped,
         timeLeft: G.mode === 'freeplay' ? Math.ceil(G.timeLeft / 1000) : null,
         balloons: Array.from(G.balloons.values()).map(function (b) {
-          const r = b.el.getBoundingClientRect();
-          const isTarget = G.target != null && b.key === G.target;
+          const spot = balloonSpot(b);
           return {
             id: b.id, kind: b.kind, color: b.color,
             value: b.info ? b.info.word : null, key: b.key == null ? null : b.key,
-            isTarget: isTarget,
-            shouldPop: G.mode === 'freeplay' ? b.kind !== 'evil' : G.explore ? true : isTarget,
-            x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.width * 0.55),
-            visible: r.bottom > sr.top && r.top < sr.bottom
+            isTarget: G.target != null && b.key === G.target,
+            shouldPop: shouldPop(b),
+            x: spot.x, y: spot.y,
+            visible: spot.visible     // centre is on screen and clickable
           };
         })
       });
     },
-    start: function (o) { o = o || {}; if (o.speed) speedOverride = +o.speed; start({ mode: o.mode || 'freeplay', level: o.level, explore: o.explore, learn: o.learn }); },
+    start: function (o) { o = o || {}; if (o.speed) speedOverride = +o.speed; if (o.agent != null) agent.on = !!o.agent; start({ mode: o.mode || 'freeplay', level: o.level, explore: o.explore, learn: o.learn }); },
     pop: function (id) {
       if (!G || G.status !== 'playing') return { ok: false, error: 'No game in progress' };
       const d = G.balloons.get(id);
       if (!d) return { ok: false, error: 'No balloon with id ' + id + ' (it may have floated away)' };
+      if (agent.on) agentWake();
       return Object.assign({ ok: true }, popBalloon(d));
     },
     pause: pause,
@@ -735,6 +802,20 @@
     home: goHome,
     setSpeed: function (n) { n = +n; if (!(n > 0)) throw new Error('speed must be a positive number'); speedOverride = n; return n; },
     setLanguage: function (l) { if (!I18N.LANGS[l]) throw new Error('Unknown language ' + l); settings.lang = l; saveSettings(); applyLanguage(); return l; },
-    languages: function () { return Object.keys(I18N.LANGS); }
+    languages: function () { return Object.keys(I18N.LANGS); },
+    describe: describeState,
+    setAgentMode: function (on, stepMs) {
+      agent.on = on !== false;
+      if (stepMs > 0) agent.step = stepMs;
+      if (G) G.runUntil = performance.now() + (agent.on ? 800 : 0);
+      if (!agent.on) { stage.classList.remove('paused'); renderAgentBadge(false); $('#agent-badge').hidden = true; badgeState = null; }
+      return { on: agent.on, step: agent.step };
+    },
+    // Let the game run for ms milliseconds (agent mode), then resolve with the new state.
+    step: function (ms) {
+      ms = ms > 0 ? ms : agent.step;
+      agentWake(ms);
+      return new Promise(function (r) { setTimeout(function () { r(window.BalloonGame.state()); }, ms + 50); });
+    }
   };
 })();

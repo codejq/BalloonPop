@@ -2,7 +2,24 @@
 
 > A browser game for kids: balloons float up the screen and you pop them. There is a classic score
 > mode plus learning modes for colors, shapes, numbers and letters in 11 languages. Agents can play by
-> clicking balloons like a human, or (recommended) through the JavaScript API on `window.BalloonPop`.
+> clicking balloons like a human, through WebMCP tools, or through the JavaScript API on `window.BalloonPop`.
+
+## Start here: agent mode (turn-based)
+Open https://codejq.github.io/BalloonPop/?agent=1 (or call `BalloonPop.start({mode, agent: true})`).
+In agent mode the game is FROZEN while you think. After each action (a click/tap, or an API pop) it runs
+for about 1.5 s, then freezes again, so balloons do not escape while you decide. A badge at the bottom
+says "paused, waiting for your move" or "running". Hovering never pops balloons in agent mode.
+Change the run time with `?step=2500` or `BalloonPop.setAgentMode(true, 2500)`.
+Deep links work too: `?agent=1&mode=colors&level=1`, `?agent=1&mode=numbers&learn=1`.
+
+To play by clicking (computer use): read the prompt at the top ("Find: red"), click the matching balloon's
+centre, take a new screenshot. Clicking empty sky just lets the game run a little.
+
+## WebMCP tools
+If your browser exposes `navigator.modelContext` (WebMCP), the page registers these tools:
+`balloonpop_start {mode, level?, learn?, explore?}`, `balloonpop_look`, `balloonpop_pop {id}`,
+`balloonpop_pop_all_safe`, `balloonpop_wait {ms?}`. Each returns a plain-text description of the screen,
+and they always use agent mode.
 
 ## Modes
 - `freeplay`: 3 minutes to reach 150 points. Normal balloon +1, pink heart balloon +5, evil balloon
@@ -17,9 +34,13 @@
 
 ## JavaScript API (run in the page, e.g. with a browser tool's "evaluate JS")
 - `BalloonPop.help()`: prints this API summary.
+- `BalloonPop.describe()`: plain-text summary of the screen: target, progress, and every visible balloon with
+  its id, position and "<- POP" / "<- AVOID". Easiest way to decide the next move.
+- `await BalloonPop.step(ms)`: let the game run for `ms` (agent mode) and get the new state.
+- `BalloonPop.setAgentMode(on, stepMs)`: turn agent mode on or off.
 - `BalloonPop.modes()`: `[{mode, levels, explore}]`.
-- `BalloonPop.start({mode: 'colors', level: 1, speed: 0.3})`: starts a game. `speed` < 1 slows balloons,
-  which helps slow agents. `explore: true` starts explore mode.
+- `BalloonPop.start({mode: 'colors', level: 1, agent: true})`: starts a game. `agent: true` = turn-based.
+  `speed` < 1 slows balloons. `explore: true` starts explore mode, `learn: true` learn-in-order mode.
 - `BalloonPop.getState()`: returns
   `{status, mode, level, target: {key, word}, score, goal, correct, mistakes, timeLeft, balloons: [...]}`.
   `status` is `menu`, `playing`, `paused`, `won` or `lost`.
@@ -31,13 +52,12 @@
 - `BalloonPop.pause()`, `resume()`, `home()`, `setSpeed(n)`, `setLanguage('fr')`, `languages()`.
 
 A simple winning loop:
-    BalloonPop.start({mode: 'shapes', level: 1, speed: 0.5});
-    const t = setInterval(() => { BalloonPop.popAllSafe();
-      if (BalloonPop.getState().status !== 'playing') clearInterval(t); }, 400);
+    BalloonPop.start({mode: 'shapes', level: 1, agent: true});
+    while (BalloonPop.getState().status === 'playing') { BalloonPop.popAllSafe(); await BalloonPop.step(1200); }
 
 ## Playing without JavaScript (DOM / accessibility tree)
 - Home screen: buttons `.mode-card[data-mode=...]`. Level screen: `#btn-explore` and `.level-btn[data-level=N]`.
 - Prompt: `#prompt` (its aria-label says what to find). Stats: `#stats`. Pause: `#btn-pause`.
 - Each balloon is `div.balloon[role=button]` with a unique `id` and an `aria-label` naming it, e.g.
   "red balloon", "7 balloon" or "Evil balloon - do NOT pop (-10 points)".
-- URL parameters: `?mode=colors&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?speed=0.2`, `?lang=es`.
+- URL parameters: `?mode=colors&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?speed=0.2`, `?lang=es`, `?agent=1`, `?step=2500`.

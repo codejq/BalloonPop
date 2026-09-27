@@ -76,18 +76,31 @@ Remove an entry to fall back to a sound synthesised in code. Files are decoded o
 
 ## 🤖 Let AI agents play
 
-LLM agents (Claude computer use, browser-use, Playwright MCP and others) can play every mode. Their instructions live at [`/llms.txt`](https://codejq.github.io/BalloonPop/llms.txt).
+LLM agents (Claude computer use, browser-use, Playwright MCP, WebMCP-enabled browsers and others) can play every mode. Their instructions live at [`/llms.txt`](https://codejq.github.io/BalloonPop/llms.txt).
+
+**Agent mode (turn-based).** Open [`?agent=1`](https://codejq.github.io/BalloonPop/?agent=1). The game **freezes while the agent thinks** and runs for about 1.5 s after each click, tap or API move, so even an agent that takes several seconds per screenshot can play. A badge shows whether the game is waiting or running, and hovering never pops balloons, so moving the mouse over an evil balloon is safe.
+
+![Agent mode](docs/screenshots/agent-mode.png)
+
+**Ways to play:**
+
+| Agent type | How it plays |
+|---|---|
+| Screenshot + click (computer use) | Open `?agent=1`, read the prompt ("Find: red"), click the matching balloon, repeat. |
+| Accessibility tree / DOM | Balloons are `role="button"` with labels like "red balloon" or "Evil balloon - do NOT pop". |
+| WebMCP browsers | The page registers tools on `navigator.modelContext`: `balloonpop_start`, `balloonpop_look`, `balloonpop_pop`, `balloonpop_pop_all_safe`, `balloonpop_wait`. |
+| JavaScript (Playwright, browser-use, devtools) | Use the `window.BalloonPop` API below. |
 
 ```js
-BalloonPop.modes();                                       // modes and level counts
-BalloonPop.start({ mode: 'colors', level: 1, speed: 0.5 });
-BalloonPop.start({ mode: 'numbers', learn: true });        // Learn 1, 2, 3 (or mode: 'letters' for ABC)
-BalloonPop.getState();   // { status, target: {word}, correct, goal, balloons: [{ id, value, isTarget, shouldPop, x, y }] }
-BalloonPop.pop('balloon-7');                              // -> { ok, correct, points, score }
-BalloonPop.popAllSafe();                                  // pop every balloon it's right to pop
+BalloonPop.start({ mode: 'colors', level: 1, agent: true });   // turn-based game
+BalloonPop.describe();       // "Find: "red" ... - balloon-7: red balloon at (412, 388)  <- POP"
+BalloonPop.pop('balloon-7'); // -> { ok, correct, points, score }
+await BalloonPop.step(1500); // let balloons float for 1.5 s
+BalloonPop.popAllSafe();     // pop every balloon it's right to pop
+BalloonPop.start({ mode: 'numbers', learn: true, agent: true });   // Learn 1, 2, 3
 ```
 
-Every balloon is also `role="button"` with an `aria-label` ("red balloon", "Evil balloon - do NOT pop"), so screen-clicking agents and screen readers can tell them apart. URL parameters give deep links: `?mode=shapes&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?lang=fr`, `?speed=0.3`.
+Deep links: `?agent=1&mode=shapes&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?lang=fr`, `?speed=0.3`, `?step=2500`.
 
 ## Run it locally
 

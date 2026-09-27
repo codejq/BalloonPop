@@ -1,7 +1,7 @@
 // Offline cache for Balloon Pop.
 // App shell: stale-while-revalidate (updates arrive on the next visit).
 // Voice clips: cache-first, so each word is downloaded once and then played from disk.
-const SHELL = 'bp-shell-v4';
+const SHELL = 'bp-shell-v5';
 const VOICES = 'bp-voices-v1';
 const SHELL_FILES = [
   './', 'index.html', 'css/game.css', 'js/i18n.js', 'js/audio.js', 'js/art.js', 'js/game.js', 'js/install.js',
