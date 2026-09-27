@@ -6,6 +6,14 @@ A cheerful balloon-popping game for kids that teaches **colors, shapes, numbers 
 
 ![Home screen](docs/screenshots/home.png)
 
+## 📲 Install it on your phone
+
+Balloon Pop installs like an app, with its own icon, full screen and offline play:
+
+- **Android** (Chrome, Edge, Samsung Internet): tap **📲 Install app** on the home screen, or use the browser menu's **Install app / Add to Home screen**.
+- **iPhone / iPad** (Safari): tap **📲 Install app** for step-by-step help: tap **Share**, choose **Add to Home Screen**, then **Add**.
+- **Desktop** (Chrome, Edge): use the install icon in the address bar.
+
 ## Game modes
 
 | Mode | How it works |
@@ -103,6 +111,7 @@ BalloonPop/src/main/assets/www/      # the web game (also bundled in the Android
 ├── js/game.js                       # modes, levels, spawning, scoring, screens
 ├── agent-api.js / llms.txt          # API and instructions for AI agents
 ├── sw.js / manifest.webmanifest     # offline support, installable app
+├── js/install.js / icons/           # Install button, iOS instructions, app icons
 ├── sounds/                          # balloon sounds + sounds.js config
 └── voices/<lang>/…mp3               # pre-rendered voice clips
 tools/generate_voices.py             # regenerates voice clips with Piper

@@ -219,6 +219,29 @@
     LANGS[k].ui.learnLettersDesc = LEARN[k][2];
   });
 
+  // Installing to the home screen. iOS step labels follow Apple's own wording in each language.
+  const INSTALL = {
+    en: ['Install app', 'Add Balloon Pop to your home screen and play full screen, even offline.', 'Tap the Share button', 'Choose “Add to Home Screen”', 'Tap “Add”'],
+    es: ['Instalar app', 'Añade Balloon Pop a tu pantalla de inicio y juega a pantalla completa, incluso sin conexión.', 'Toca el botón Compartir', 'Elige «Añadir a pantalla de inicio»', 'Toca «Añadir»'],
+    fr: ["Installer l'appli", "Ajoute Balloon Pop à ton écran d'accueil et joue en plein écran, même hors ligne.", 'Touche le bouton Partager', "Choisis « Sur l'écran d'accueil »", 'Touche « Ajouter »'],
+    de: ['App installieren', 'Füge Balloon Pop zum Home-Bildschirm hinzu und spiele im Vollbild, sogar offline.', 'Tippe auf „Teilen“', 'Wähle „Zum Home-Bildschirm“', 'Tippe auf „Hinzufügen“'],
+    it: ['Installa app', 'Aggiungi Balloon Pop alla schermata Home e gioca a schermo intero, anche offline.', 'Tocca il pulsante Condividi', 'Scegli «Aggiungi alla schermata Home»', 'Tocca «Aggiungi»'],
+    pt: ['Instalar app', 'Adicione o Balloon Pop à Tela de Início e jogue em tela cheia, até offline.', 'Toque no botão Compartilhar', 'Escolha “Adicionar à Tela de Início”', 'Toque em “Adicionar”'],
+    nl: ['App installeren', 'Zet Balloon Pop op je beginscherm en speel schermvullend, zelfs offline.', 'Tik op de deelknop', 'Kies „Zet op beginscherm”', 'Tik op „Voeg toe”'],
+    sv: ['Installera appen', 'Lägg till Balloon Pop på hemskärmen och spela i helskärm, även offline.', 'Tryck på Dela-knappen', 'Välj ”Lägg till på hemskärmen”', 'Tryck på ”Lägg till”'],
+    ru: ['Установить', 'Добавь Balloon Pop на экран «Домой» и играй на весь экран, даже без интернета.', 'Нажми кнопку «Поделиться»', 'Выбери «На экран „Домой“»', 'Нажми «Добавить»'],
+    id: ['Pasang aplikasi', 'Tambahkan Balloon Pop ke layar utama dan main layar penuh, bahkan tanpa internet.', 'Ketuk tombol Bagikan', 'Pilih “Tambah ke Layar Utama”', 'Ketuk “Tambah”'],
+    ar: ['تثبيت التطبيق', 'أضف Balloon Pop إلى الشاشة الرئيسية والعب بملء الشاشة حتى دون اتصال.', 'اضغط زر المشاركة', 'اختر «إضافة إلى الشاشة الرئيسية»', 'اضغط «إضافة»']
+  };
+  Object.keys(INSTALL).forEach(function (k) {
+    const v = INSTALL[k];
+    Object.assign(LANGS[k].ui, { install: v[0], installIntro: v[1], iosStep1: v[2], iosStep2: v[3], iosStep3: v[4] });
+  });
+
+  const POWERED_BY = { en: 'Powered by', es: 'Desarrollado por', fr: 'Propulsé par', de: 'Bereitgestellt von', it: 'Realizzato da',
+    pt: 'Desenvolvido por', nl: 'Mogelijk gemaakt door', sv: 'Drivs av', ru: 'Работает на', id: 'Didukung oleh', ar: 'مدعوم من' };
+  Object.keys(POWERED_BY).forEach(function (k) { LANGS[k].ui.poweredBy = POWERED_BY[k]; });
+
   window.I18N = {
     LANGS: LANGS,
     COLOR_KEYS: COLOR_KEYS,

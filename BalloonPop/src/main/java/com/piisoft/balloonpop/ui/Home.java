@@ -378,6 +378,12 @@ public class Home extends Activity  {
                     Toast.makeText(getApplicationContext(), "Custom protocol call balloonpop:// ", Toast.LENGTH_LONG).show();
                     return true;
                 }
+                // The game itself is a local file; open web links (e.g. "Powered by") in the browser.
+                String scheme = request.getUrl().getScheme();
+                if ("http".equals(scheme) || "https".equals(scheme)) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, request.getUrl()));
+                    return true;
+                }
 
                 return super.shouldOverrideUrlLoading(view, request);
 
