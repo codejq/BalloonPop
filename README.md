@@ -58,13 +58,13 @@ python3 tools/generate_voices.py            # all languages
 python3 tools/generate_voices.py --only fr  # just one
 ```
 
-**Balloon sounds.** Popping a balloon plays `sounds/pop.mp3`, the heart balloon `sounds/heart.mp3`, and the evil balloon `sounds/evil.mp3`. They are original sounds made by [`tools/generate_sounds.py`](tools/generate_sounds.py), so they are free to use. To use different sounds, put audio files you have the rights to in `www/sounds/` and point [`sounds/sounds.js`](BalloonPop/src/main/assets/www/sounds/sounds.js) at them:
+**Balloon sounds.** The game uses the same three sounds as the original game: popping a balloon plays `sounds/popup.wav`, the heart balloon `sounds/dino.mp3`, and the evil balloon `sounds/evil.wav`. To change a sound, put another file in `www/sounds/` and point [`sounds/sounds.js`](BalloonPop/src/main/assets/www/sounds/sounds.js) at it:
 
 ```js
-window.CUSTOM_SOUNDS = { pop: 'sounds/pop.mp3', heart: 'sounds/heart.mp3', evil: 'sounds/evil.mp3' };
+window.CUSTOM_SOUNDS = { pop: 'sounds/popup.wav', heart: 'sounds/dino.mp3', evil: 'sounds/evil.wav' };
 ```
 
-Remove an entry to fall back to a sound synthesised in code. Files are decoded once and cached offline. All other sound effects are synthesised with the Web Audio API, and all artwork is SVG drawn in code, so the game has no third-party image or sound files.
+Remove an entry to fall back to a sound synthesised in code. Files are decoded once and cached offline. All other sound effects are synthesised with the Web Audio API, and all artwork is SVG drawn in code, so apart from the three balloon sounds the game needs no image or sound files.
 
 ## 🤖 Let AI agents play
 
@@ -106,7 +106,6 @@ BalloonPop/src/main/assets/www/      # the web game (also bundled in the Android
 ├── sounds/                          # balloon sounds + sounds.js config
 └── voices/<lang>/…mp3               # pre-rendered voice clips
 tools/generate_voices.py             # regenerates voice clips with Piper
-tools/generate_sounds.py             # regenerates the pop / heart / evil sounds
 .github/workflows/pages.yml          # GitHub Pages deployment
 BalloonPop/src/main/java/…/Home.java # Android WebView wrapper (+ native TTS bridge)
 ```

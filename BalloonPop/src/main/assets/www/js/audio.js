@@ -77,7 +77,6 @@
       if (clip instanceof AudioBuffer) {
         const src = ctx.createBufferSource();
         src.buffer = clip;
-        if (name === 'pop') src.playbackRate.value = 0.88 + Math.random() * 0.3;   // vary repeated pops
         src.connect(master);
         src.start();
       } else {
