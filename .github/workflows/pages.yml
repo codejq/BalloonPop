@@ -1,0 +1,36 @@
+name: Deploy web game to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'BalloonPop/src/main/assets/www/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build site
+        # Everything the web game needs lives in www/ (the legacy assets/ folder is not used or published).
+        run: |
+          mkdir _site
+          rsync -a --exclude '/assets/' BalloonPop/src/main/assets/www/ _site/
+          touch _site/.nojekyll
+
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
