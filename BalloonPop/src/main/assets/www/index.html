@@ -1,55 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Balloon Pop Game</title>
-  <meta name="description" content="Pop the smiling balloons, avoid the evil ones! A free browser game for kids.">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,minimum-scale=0.2, user-scalable=no" />
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="celebrate.css">
+  <title>Balloon Pop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="description" content="Pop balloons and learn colors, shapes, numbers and letters in 11 languages. A free browser game for kids.">
+  <meta name="theme-color" content="#38bdf8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
   <link rel="help" type="text/plain" href="llms.txt" title="Instructions for AI agents">
- 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+  <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
-<p id="agentHelp" class="visually-hidden">AI agents: this game has a JavaScript API. Call window.BalloonPop.help() or read llms.txt. Pop every balloon except the evil ones.</p>
-<div id="celebrate" class="js-container container" > Congratulations Well Done </div>
-<div id="sorryTryAgain"   > X Sorry, Try Again </div>
+  <p id="agentHelp" class="visually-hidden">AI agents: this game has a JavaScript API. Call window.BalloonPop.help() or read llms.txt.</p>
 
-<button id="startGameBtn" >Start</button>
-  <div id="game-container">
-    <div id="score">Score: 0</div>
-	<div id="clockTimer"></div>
-    <div id="balloons">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="bp-shade" cx=".35" cy=".3" r=".85">
+        <stop offset="0" stop-color="#fff" stop-opacity=".35"/>
+        <stop offset=".5" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".25"/>
+      </radialGradient>
+    </defs>
+  </svg>
 
-	</div>
+  <div id="sky" aria-hidden="true">
+    <div class="sun"></div>
+    <div id="clouds"></div>
+    <svg class="hills" viewBox="0 0 1200 120" preserveAspectRatio="none">
+      <path d="M0 70 Q150 10 320 60 T650 50 T980 40 T1200 60 V120 H0 Z" fill="#86efac"/>
+      <path d="M0 95 Q200 50 420 90 T820 80 T1200 85 V120 H0 Z" fill="#4ade80"/>
+    </svg>
   </div>
-  <div id="ballonTemplate">
-  	<div class="wrap">
-		<div class="eye blink"></div>
-		<div class="eye blink"></div>
-		<div class="nose"></div>
-		<div class="mouth"></div>
-	
-	</div>
 
+  <main id="app">
+    <!-- Home -->
+    <section id="screen-home" class="screen active" aria-labelledby="title">
+      <button class="icon-btn corner" id="btn-settings" data-i18n-label="settings">⚙️</button>
+      <header class="brand">
+        <div class="logo-balloons" id="logo"></div>
+        <h1 id="title">Balloon Pop</h1>
+        <p class="tagline" data-i18n="tagline">Pop, play and learn!</p>
+      </header>
+      <div class="mode-grid" id="modes"></div>
+    </section>
+
+    <!-- Level select -->
+    <section id="screen-levels" class="screen" aria-labelledby="levels-title">
+      <div class="topbar">
+        <button class="icon-btn" id="btn-levels-back" data-i18n-label="back">⬅️</button>
+        <h2 id="levels-title"></h2>
+        <span class="topbar-spacer"></span>
+      </div>
+      <div class="levels-body">
+        <button class="explore-card" id="btn-explore">
+          <span class="explore-icon">🔍</span>
+          <span><strong data-i18n="explore">Explore</strong><small data-i18n="exploreDesc">Pop anything and hear its name</small></span>
+        </button>
+        <h3 data-i18n="chooseLevel">Choose a level</h3>
+        <div class="level-grid" id="level-grid"></div>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section id="screen-game" class="screen" aria-label="Game">
+      <div id="stage"></div>
+      <header class="hud">
+        <button class="icon-btn" id="btn-pause" data-i18n-label="paused">⏸️</button>
+        <button class="prompt" id="prompt" data-i18n-title="tapToHear"></button>
+        <div class="stats" id="stats" aria-live="polite"></div>
+      </header>
+    </section>
+  </main>
+
+  <!-- Overlays -->
+  <div class="overlay" id="overlay-pause" hidden>
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <h2 id="pause-title" data-i18n="paused">Paused</h2>
+      <button class="btn primary" id="btn-resume" data-i18n="resume">Resume</button>
+      <button class="btn" id="btn-restart" data-i18n="retry">Play again</button>
+      <button class="btn" id="btn-quit" data-i18n="home">Home</button>
+    </div>
   </div>
-	
-<audio id="popup0" style="display:none" preload="auto">
-  <source src="assets/Resource/Sounds/popup.wav" type="audio/wav">
-</audio>
 
-<audio id="dino" style="display:none" preload="auto">
-  <source src="assets/Resource/Sounds/dino.mp3" type="audio/mpeg">
-</audio>
- 
-<audio id="evil" style="display:none" preload="auto">
-  <source src="assets/Resource/Sounds/evil.wav" type="audio/wav">
-</audio>
+  <div class="overlay" id="overlay-result" hidden>
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="result-title">
+      <h2 id="result-title"></h2>
+      <div class="result-stars" id="result-stars"></div>
+      <p class="result-detail" id="result-detail"></p>
+      <button class="btn primary" id="btn-next" data-i18n="next">Next level</button>
+      <button class="btn" id="btn-again" data-i18n="retry">Play again</button>
+      <button class="btn" id="btn-result-back" data-i18n="levels">Levels</button>
+    </div>
+  </div>
 
-  <script src="app.js"></script>
-  <script src="celebrate.js"></script>
+  <div class="overlay" id="overlay-settings" hidden>
+    <div class="panel settings" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title" data-i18n="settings">Settings</h2>
+      <label class="field">
+        <span data-i18n="language">Language</span>
+        <select id="set-lang"></select>
+      </label>
+      <p class="hint" id="voice-hint" hidden></p>
+      <label class="toggle"><span data-i18n="sound">Sound effects</span><input type="checkbox" id="set-sound"><i></i></label>
+      <label class="toggle"><span data-i18n="voice">Voice</span><input type="checkbox" id="set-voice"><i></i></label>
+      <div class="field">
+        <span data-i18n="speed">Balloon speed</span>
+        <div class="segmented" id="set-speed" role="radiogroup">
+          <button data-speed="slow" data-i18n="slow" role="radio">Slow</button>
+          <button data-speed="normal" data-i18n="normal" role="radio">Normal</button>
+          <button data-speed="fast" data-i18n="fast" role="radio">Fast</button>
+        </div>
+      </div>
+      <button class="btn primary" id="btn-settings-close" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <script src="js/i18n.js"></script>
+  <script src="voices/manifest.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/game.js"></script>
   <script src="agent-api.js"></script>
- 
 </body>
 </html>

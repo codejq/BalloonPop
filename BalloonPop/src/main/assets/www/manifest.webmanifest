@@ -1,0 +1,12 @@
+{
+  "name": "Balloon Pop",
+  "short_name": "Balloon Pop",
+  "description": "Pop balloons and learn colors, shapes, numbers and letters.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#38bdf8",
+  "theme_color": "#38bdf8",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

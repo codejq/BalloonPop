@@ -44,6 +44,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
 import android.app.AlertDialog;
 
 import com.google.zxing.ResultPoint;
@@ -96,6 +98,8 @@ import androidx.core.app.ActivityCompat;
 public class Home extends Activity  {
     private View mContentView;
     private WebView myWebView;
+    private TextToSpeech tts;
+    private boolean ttsReady = false;
     public static final int INPUT_FILE_REQUEST_CODE = 1;
     public static final String EXTRA_FROM_NOTIFICATION = "EXTRA_FROM_NOTIFICATION";
     private ValueCallback<Uri[]> mFilePathCallback;
@@ -350,6 +354,16 @@ public class Home extends Activity  {
         webSettings.setDisplayZoomControls(false);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);*/
+
+        // WebView has no speechSynthesis, so the game speaks through Android's TextToSpeech
+        // for languages that have no pre-rendered voice clips.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                ttsReady = status == TextToSpeech.SUCCESS;
+            }
+        });
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         myWebView.addJavascriptInterface(new JavaScriptInterface(this, myWebView), "android");
         myWebView.getSettings().setUserAgentString(myWebView.getSettings().getUserAgentString() + " // Android // and piisoft Agent // balloonpop // ");
@@ -751,6 +765,10 @@ public class Home extends Activity  {
 
     @Override
     protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
         super.onDestroy();
         //capture.onDestroy();
 
@@ -1114,6 +1132,18 @@ public class Home extends Activity  {
         }
 
 
+
+        @JavascriptInterface
+        public void speak(String text, String languageTag) {
+            if (tts == null || !ttsReady) return;
+            tts.setLanguage(Locale.forLanguageTag(languageTag));
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "balloonpop");
+        }
+
+        @JavascriptInterface
+        public void stopSpeaking() {
+            if (tts != null) tts.stop();
+        }
 
         @JavascriptInterface
         public void tryActivate(String Email) {
