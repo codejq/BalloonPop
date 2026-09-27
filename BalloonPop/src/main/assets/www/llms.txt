@@ -11,6 +11,9 @@
   voice says it. Pop balloons that match. Wrong pops count as misses. Clear the level's goal (7-12 correct
   pops) to finish; fewer misses earn more stars (0-1 misses = 3 stars). Level N+1 unlocks after level N.
 - Explore (`explore: true` in any learning mode): no goal, every pop says the balloon's name.
+- Learn (`learn: true`, numbers and letters only): pop the items in order (1 → 20, or the whole alphabet).
+  The prompt shows the sequence with the next item highlighted; each pop says the item aloud. Wrong
+  balloons wobble instead of popping and count as misses.
 
 ## JavaScript API (run in the page, e.g. with a browser tool's "evaluate JS")
 - `BalloonPop.help()`: prints this API summary.
@@ -37,4 +40,4 @@ A simple winning loop:
 - Prompt: `#prompt` (its aria-label says what to find). Stats: `#stats`. Pause: `#btn-pause`.
 - Each balloon is `div.balloon[role=button]` with a unique `id` and an `aria-label` naming it, e.g.
   "red balloon", "7 balloon" or "Evil balloon - do NOT pop (-10 points)".
-- URL parameters: `?mode=colors&level=2`, `?mode=letters&explore=1`, `?speed=0.2`, `?lang=es`.
+- URL parameters: `?mode=colors&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?speed=0.2`, `?lang=es`.

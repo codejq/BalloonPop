@@ -199,6 +199,26 @@
     }
   };
 
+  // "Learn" mode: pop numbers / letters in order.
+  const LEARN = {
+    en: ['Learn', 'Count along: pop the numbers in order', 'Pop the letters in alphabet order'],
+    es: ['Aprender', 'Cuenta conmigo: explota los números en orden', 'Explota las letras en orden alfabético'],
+    fr: ['Apprendre', "Compte avec moi : éclate les nombres dans l'ordre", "Éclate les lettres dans l'ordre de l'alphabet"],
+    de: ['Lernen', 'Zähl mit: Lass die Zahlen der Reihe nach platzen', 'Lass die Buchstaben in ABC-Reihenfolge platzen'],
+    it: ['Impara', 'Conta con me: scoppia i numeri in ordine', 'Scoppia le lettere in ordine alfabetico'],
+    pt: ['Aprender', 'Conte comigo: estoure os números em ordem', 'Estoure as letras em ordem alfabética'],
+    nl: ['Leren', 'Tel mee: knal de getallen op volgorde', 'Knal de letters in alfabetische volgorde'],
+    sv: ['Lär dig', 'Räkna med: smäll siffrorna i ordning', 'Smäll bokstäverna i alfabetisk ordning'],
+    ru: ['Учить', 'Считай со мной: лопай числа по порядку', 'Лопай буквы по алфавиту'],
+    id: ['Belajar', 'Berhitung: letuskan angka secara berurutan', 'Letuskan huruf sesuai urutan abjad'],
+    ar: ['تعلّم', 'عُدّ معي: فرقع الأرقام بالترتيب', 'فرقع الحروف بترتيب الحروف الهجائية']
+  };
+  Object.keys(LEARN).forEach(function (k) {
+    LANGS[k].ui.learn = LEARN[k][0];
+    LANGS[k].ui.learnNumbersDesc = LEARN[k][1];
+    LANGS[k].ui.learnLettersDesc = LEARN[k][2];
+  });
+
   window.I18N = {
     LANGS: LANGS,
     COLOR_KEYS: COLOR_KEYS,

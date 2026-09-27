@@ -16,6 +16,12 @@ A cheerful balloon-popping game for kids that teaches **colors, shapes, numbers 
 | 🔢 **Numbers** | Find numbers from 1 to 20. |
 | 🔤 **Letters** | Find letters of the alphabet: Latin, Cyrillic for Russian, Arabic for Arabic. |
 
+**🎓 Learn 1, 2, 3 and Learn ABC** (in Numbers and Letters): pop the numbers from 1 to 20, or the whole alphabet, **in order** while the voice counts or spells along. A strip at the top shows what's done, what's next and what comes after, and for numbers a row of dots shows how many. A wrong balloon wobbles instead of popping and the voice repeats the one to find. Russian and Arabic use their own alphabets.
+
+| Learn 1, 2, 3 | Learn ABC |
+|---|---|
+| ![Learn numbers](docs/screenshots/learn-numbers.png) | ![Learn letters](docs/screenshots/learn-letters.png) |
+
 **Learning modes** (Colors, Shapes, Numbers, Letters) have:
 
 - **Explore**, a no-pressure mode for toddlers where every pop says the balloon's name.
@@ -52,15 +58,13 @@ python3 tools/generate_voices.py            # all languages
 python3 tools/generate_voices.py --only fr  # just one
 ```
 
-All sound effects are synthesised in code with the Web Audio API, and all artwork is SVG drawn in code, so the game has no third-party image or sound files.
-
-**Custom balloon sounds.** To use your own pop, heart-balloon or evil-balloon sounds, put audio files you have the rights to in `www/sounds/` and list them in [`www/sounds/sounds.js`](BalloonPop/src/main/assets/www/sounds/sounds.js):
+**Balloon sounds.** Popping a balloon plays `sounds/pop.mp3`, the heart balloon `sounds/heart.mp3`, and the evil balloon `sounds/evil.mp3`. They are original sounds made by [`tools/generate_sounds.py`](tools/generate_sounds.py), so they are free to use. To use different sounds, put audio files you have the rights to in `www/sounds/` and point [`sounds/sounds.js`](BalloonPop/src/main/assets/www/sounds/sounds.js) at them:
 
 ```js
 window.CUSTOM_SOUNDS = { pop: 'sounds/pop.mp3', heart: 'sounds/heart.mp3', evil: 'sounds/evil.mp3' };
 ```
 
-Any sound you leave out uses the built-in one. Files are decoded once and cached offline.
+Remove an entry to fall back to a sound synthesised in code. Files are decoded once and cached offline. All other sound effects are synthesised with the Web Audio API, and all artwork is SVG drawn in code, so the game has no third-party image or sound files.
 
 ## 🤖 Let AI agents play
 
@@ -69,12 +73,13 @@ LLM agents (Claude computer use, browser-use, Playwright MCP and others) can pla
 ```js
 BalloonPop.modes();                                       // modes and level counts
 BalloonPop.start({ mode: 'colors', level: 1, speed: 0.5 });
+BalloonPop.start({ mode: 'numbers', learn: true });        // Learn 1, 2, 3 (or mode: 'letters' for ABC)
 BalloonPop.getState();   // { status, target: {word}, correct, goal, balloons: [{ id, value, isTarget, shouldPop, x, y }] }
 BalloonPop.pop('balloon-7');                              // -> { ok, correct, points, score }
 BalloonPop.popAllSafe();                                  // pop every balloon it's right to pop
 ```
 
-Every balloon is also `role="button"` with an `aria-label` ("red balloon", "Evil balloon - do NOT pop"), so screen-clicking agents and screen readers can tell them apart. URL parameters give deep links: `?mode=shapes&level=2`, `?mode=letters&explore=1`, `?lang=fr`, `?speed=0.3`.
+Every balloon is also `role="button"` with an `aria-label` ("red balloon", "Evil balloon - do NOT pop"), so screen-clicking agents and screen readers can tell them apart. URL parameters give deep links: `?mode=shapes&level=2`, `?mode=letters&explore=1`, `?mode=numbers&learn=1`, `?lang=fr`, `?speed=0.3`.
 
 ## Run it locally
 
@@ -98,8 +103,10 @@ BalloonPop/src/main/assets/www/      # the web game (also bundled in the Android
 ├── js/game.js                       # modes, levels, spawning, scoring, screens
 ├── agent-api.js / llms.txt          # API and instructions for AI agents
 ├── sw.js / manifest.webmanifest     # offline support, installable app
+├── sounds/                          # balloon sounds + sounds.js config
 └── voices/<lang>/…mp3               # pre-rendered voice clips
 tools/generate_voices.py             # regenerates voice clips with Piper
+tools/generate_sounds.py             # regenerates the pop / heart / evil sounds
 .github/workflows/pages.yml          # GitHub Pages deployment
 BalloonPop/src/main/java/…/Home.java # Android WebView wrapper (+ native TTS bridge)
 ```

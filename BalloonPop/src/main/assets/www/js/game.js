@@ -86,6 +86,7 @@
       case 'letters': return I18N.alphabet(settings.lang).slice(0, 3).join('');
     }
   }
+  function hasLearn(mode) { return mode === 'numbers' || mode === 'letters'; }
   function starsTotal(mode) {
     const p = progress[mode] || {};
     let n = 0;
@@ -97,7 +98,7 @@
     $('#modes').innerHTML = MODE_ORDER.map(function (m) {
       let extra = '';
       if (m === 'freeplay') { const b = store.get('best.freeplay', null); extra = b != null ? '🏆 ' + t('bestScore') + ': ' + b : ''; }
-      else { const n = starsTotal(m); extra = n ? '★ ' + n + ' / ' + levelsFor(m).length * 3 : ''; }
+      else { const n = starsTotal(m); extra = n ? '★ ' + n + ' / ' + (levelsFor(m).length + (hasLearn(m) ? 1 : 0)) * 3 : ''; }
       return '<button class="mode-card" data-mode="' + m + '" style="--c:' + MODES[m].color + '">' +
         '<span class="mode-icon">' + modeIcon(m) + '</span><span class="mode-text"><strong>' + t(m) + '</strong><small>' + t(m + 'Desc') + '</small>' +
         '<span class="stars-total">' + extra + '</span></span></button>';
@@ -129,6 +130,15 @@
     const mode = levelsMode;
     $('#levels-title').textContent = t(mode);
     const p = progress[mode] || {};
+    const learn = $('#btn-learn');
+    learn.hidden = !hasLearn(mode);
+    if (hasLearn(mode)) {
+      const firstThree = mode === 'numbers' ? '1, 2, 3' : I18N.alphabet(settings.lang).slice(0, 3).join(', ');
+      $('#learn-title').textContent = t('learn') + ' ' + firstThree;
+      $('#learn-desc').textContent = t(mode === 'numbers' ? 'learnNumbersDesc' : 'learnLettersDesc');
+      const ls = p.learn || 0;
+      $('#learn-stars').innerHTML = '<b>★</b>'.repeat(ls) + '★'.repeat(3 - ls);
+    }
     $('#level-grid').innerHTML = levelsFor(mode).map(function (items, i) {
       const lv = i + 1;
       const unlocked = lv === 1 || (p[lv - 1] || 0) > 0;
@@ -145,6 +155,7 @@
     Sfx.click();
     start({ mode: levelsMode, level: +b.dataset.level });
   });
+  $('#btn-learn').addEventListener('click', function () { Sfx.click(); start({ mode: levelsMode, learn: true }); });
   $('#btn-explore').addEventListener('click', function () { Sfx.click(); start({ mode: levelsMode, explore: true }); });
   $('#btn-levels-back').addEventListener('click', function () { Sfx.click(); renderHome(); show('home'); });
 
@@ -161,10 +172,12 @@
     stopGame();
     const mode = opts.mode;
     const levels = levelsFor(mode);
-    const level = mode === 'freeplay' || opts.explore ? 0 : Math.max(1, Math.min(opts.level || 1, levels.length));
+    const learn = !!opts.learn && hasLearn(mode);
+    const explore = !!opts.explore && !learn;
+    const level = mode === 'freeplay' || explore || learn ? 0 : Math.max(1, Math.min(opts.level || 1, levels.length));
     G = {
-      mode: mode, level: level, explore: !!opts.explore,
-      items: mode === 'freeplay' ? [] : opts.explore ? allItems(mode) : levels[level - 1],
+      mode: mode, level: level, explore: explore, learn: learn, idx: 0,
+      items: mode === 'freeplay' ? [] : explore || learn ? allItems(mode) : levels[level - 1],
       goal: Math.min(12, 5 + level * 2),
       target: null, correct: 0, mistakes: 0, score: 0, popped: 0,
       timeLeft: 180000, status: 'playing', spawnAcc: 99999, last: 0,
@@ -178,7 +191,8 @@
     layout();
     if (MODES[mode].cat) Voice.preload(MODES[mode].cat, G.items);
     Voice.preload('praise', [0, 1, 2, 3]);
-    if (mode !== 'freeplay' && !G.explore) nextTarget(false);
+    if (G.learn) { setLearnTarget(); Voice.say(speakPart(describe(mode, G.target))); }
+    else if (mode !== 'freeplay' && !G.explore) nextTarget(false);
     else setPrompt(null);
     renderStats();
     G.raf = requestAnimationFrame(tick);
@@ -247,7 +261,12 @@
     } else {
       let key;
       if (G.explore) key = pick(G.items);
-      else {
+      else if (G.learn) {
+        // The next item in the sequence, mixed with its neighbours so order matters.
+        const targetOnScreen = Array.from(G.balloons.values()).some(function (b) { return b.key === G.target; });
+        const near = G.items.slice(Math.max(0, G.idx - 2), G.idx + 4).filter(function (k) { return k !== G.target; });
+        key = !targetOnScreen || Math.random() < 0.45 || !near.length ? G.target : pick(near);
+      } else {
         const targetOnScreen = Array.from(G.balloons.values()).some(function (b) { return b.key === G.target; });
         const others = G.items.filter(function (k) { return k !== G.target; });
         key = !targetOnScreen || Math.random() < 0.35 || !others.length ? G.target : pick(others);
@@ -303,6 +322,16 @@
   }
 
   function popBalloon(data) {
+    if (G.learn && data.key !== G.target) {
+      G.mistakes++;
+      Sfx.wrong();
+      data.el.classList.remove('wrong'); void data.el.offsetWidth; data.el.classList.add('wrong');
+      const pr = $('#prompt');
+      pr.classList.remove('shake'); void pr.offsetWidth; pr.classList.add('shake');
+      Voice.say(speakPart(describe(G.mode, G.target)));
+      renderStats();
+      return { type: data.kind, points: 0, correct: false, score: G.score };
+    }
     data.popped = true;
     G.balloons.delete(data.id);
     const el = data.el;
@@ -325,6 +354,17 @@
       renderStats();
       if (G.score >= 150) finish('won');
       else if (G.score < -100) finish('lost', 'tooLow');
+    } else if (G.learn) {
+      G.correct++;
+      G.idx++;
+      Sfx.correct();
+      floatText(x, y, data.info.word);
+      Voice.say(speakPart(data.info));   // count / spell along out loud
+      result.correct = true;
+      result.points = 1;
+      renderStats();
+      if (G.idx >= G.items.length) finish('won');
+      else setLearnTarget();
     } else if (G.explore) {
       G.popped++;
       Voice.say(speakPart(data.info));
@@ -398,6 +438,26 @@
     Voice.say(parts);
   }
 
+  function setLearnTarget() {
+    G.target = G.items[G.idx];
+    const d = describe(G.mode, G.target);
+    const cells = [];
+    for (let i = G.idx - 2; i <= G.idx + 2; i++) {
+      if (i < 0 || i >= G.items.length) { cells.push('<span class="cell empty"></span>'); continue; }
+      const cls = i < G.idx ? 'done' : i === G.idx ? 'now' : 'later';
+      cells.push('<span class="cell ' + cls + '">' + describe(G.mode, G.items[i]).glyph + '</span>');
+    }
+    let dots = '';
+    if (G.mode === 'numbers') {
+      for (let i = 0; i < G.target; i++) dots += '<i></i>';
+      dots = '<span class="dots" aria-hidden="true">' + dots + '</span>';
+    }
+    const p = $('#prompt');
+    p.innerHTML = '<span class="track">' + cells.join('') + '</span>' + dots + '<span class="p-speaker">🔊</span>';
+    p.setAttribute('aria-label', t('find') + ' ' + d.word + '. ' + t('tapToHear'));
+    p.classList.remove('bounce'); void p.offsetWidth; p.classList.add('bounce');
+  }
+
   function setPrompt(d) {
     const p = $('#prompt');
     if (!d) { p.innerHTML = ''; return; }
@@ -423,6 +483,8 @@
       const time = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
       s.innerHTML = '<span class="stat' + (G.score < 0 ? ' bad' : '') + '">' + G.score + '<small>' + t('score') + ' / 150</small></span>' +
         '<span class="stat' + (sec <= 15 ? ' low' : '') + '">' + time + '<small>' + t('time') + '</small></span>';
+    } else if (G.learn) {
+      s.innerHTML = '<span class="stat">' + G.idx + ' / ' + G.items.length + '<small>' + t('learn') + '</small></span>';
     } else if (G.explore) {
       s.innerHTML = '<span class="stat">' + G.popped + '<small>' + t('popped') + '</small></span>';
     } else {
@@ -454,7 +516,7 @@
   $('#btn-quit').addEventListener('click', function () { Sfx.click(); goHome(); });
   document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
 
-  function restart() { if (G) start({ mode: G.mode, level: G.level, explore: G.explore }); }
+  function restart() { if (G) start({ mode: G.mode, level: G.level, explore: G.explore, learn: G.learn }); }
   function goHome() {
     const mode = G && G.mode;
     stopGame();
@@ -486,11 +548,12 @@
     } else {
       stars = G.mistakes <= 1 ? 3 : G.mistakes <= 4 ? 2 : 1;
       const p = progress[G.mode] = progress[G.mode] || {};
-      p[G.level] = Math.max(p[G.level] || 0, stars);
+      const slot = G.learn ? 'learn' : G.level;
+      p[slot] = Math.max(p[slot] || 0, stars);
       store.set('progress', progress);
       title.textContent = t('levelComplete');
       detail.textContent = t('mistakes') + ': ' + G.mistakes;
-      next.hidden = G.level >= levelsFor(G.mode).length;
+      next.hidden = G.learn || G.level >= levelsFor(G.mode).length;
       $('#btn-result-back').textContent = t('levels');
     }
     starsEl.innerHTML = [1, 2, 3].map(function (i) {
@@ -621,11 +684,11 @@
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     navigator.serviceWorker.register('sw.js').catch(function () {});
   }
-  // Deep links, e.g. ?mode=colors&level=2 or ?mode=letters&explore=1
+  // Deep links, e.g. ?mode=colors&level=2, ?mode=letters&explore=1 or ?mode=numbers&learn=1
   const deepMode = params.get('mode');
   if (MODES[deepMode]) {
-    if (deepMode === 'freeplay' || params.get('level') || params.get('explore')) {
-      start({ mode: deepMode, level: +params.get('level') || 1, explore: params.get('explore') === '1' });
+    if (deepMode === 'freeplay' || params.get('level') || params.get('explore') || params.get('learn')) {
+      start({ mode: deepMode, level: +params.get('level') || 1, explore: params.get('explore') === '1', learn: params.get('learn') === '1' });
     } else openLevels(deepMode);
   }
 
@@ -633,7 +696,7 @@
   window.BalloonGame = {
     modes: function () {
       return MODE_ORDER.map(function (m) {
-        return { mode: m, levels: m === 'freeplay' ? 1 : levelsFor(m).length, explore: m !== 'freeplay' };
+        return { mode: m, levels: m === 'freeplay' ? 1 : levelsFor(m).length, explore: m !== 'freeplay', learn: hasLearn(m) };
       });
     },
     state: function () {
@@ -641,9 +704,9 @@
       if (!G) return Object.assign(st, { status: 'menu' });
       const sr = stage.getBoundingClientRect();
       return Object.assign(st, {
-        status: G.status, mode: G.mode, level: G.level, explore: G.explore,
+        status: G.status, mode: G.mode, level: G.level, explore: G.explore, learn: G.learn,
         target: G.target == null ? null : { key: G.target, word: describe(G.mode, G.target).word },
-        score: G.score, goal: G.mode === 'freeplay' ? 150 : G.explore ? null : G.goal,
+        score: G.score, goal: G.mode === 'freeplay' ? 150 : G.explore ? null : G.learn ? G.items.length : G.goal,
         correct: G.correct, mistakes: G.mistakes, popped: G.popped,
         timeLeft: G.mode === 'freeplay' ? Math.ceil(G.timeLeft / 1000) : null,
         balloons: Array.from(G.balloons.values()).map(function (b) {
@@ -660,7 +723,7 @@
         })
       });
     },
-    start: function (o) { o = o || {}; if (o.speed) speedOverride = +o.speed; start({ mode: o.mode || 'freeplay', level: o.level, explore: o.explore }); },
+    start: function (o) { o = o || {}; if (o.speed) speedOverride = +o.speed; start({ mode: o.mode || 'freeplay', level: o.level, explore: o.explore, learn: o.learn }); },
     pop: function (id) {
       if (!G || G.status !== 'playing') return { ok: false, error: 'No game in progress' };
       const d = G.balloons.get(id);
