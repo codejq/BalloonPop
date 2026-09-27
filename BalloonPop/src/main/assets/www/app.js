@@ -119,10 +119,12 @@ function playSound(balloonType) {
   if (balloonType === 'evil') {
 	BALLOON_EVIL_SOUND.pause();
 	BALLOON_EVIL_SOUND.currentTime = 0;
-	BALLOON_EVIL_SOUND.play();
+	BALLOON_EVIL_SOUND.play().catch(function () {});
   }
   else {
-	(balloonType === 'heart')?DINO.play():BALLOON_POP_SOUND.play();
+	const sound = (balloonType === 'heart') ? DINO : BALLOON_POP_SOUND;
+	sound.currentTime = 0;
+	sound.play().catch(function () {});
   }
    
 }
@@ -167,6 +169,7 @@ function createBalloon() {
 
     balloon.addEventListener('mouseover', handleBalloonClick);	
 	balloon.addEventListener('touchstart', handleBalloonClick);
+	balloon.addEventListener('mousedown', handleBalloonClick);
 
 	
     balloonsContainer.appendChild(balloon);
@@ -174,7 +177,11 @@ function createBalloon() {
 }
 let interval1, interval2, interval3;
 function startGame(){
-	startTimer(180, clockTimer);
+	score = 0;
+	scoreContainer.innerHTML = 'Score: 0';
+	scoreContainer.style.color = '#ffffff';
+	balloonsContainer.innerHTML = '';
+	startTimer(180, document.getElementById('clockTimer'));
  interval1 = setInterval(function(){
 	createBalloon();
 	}, 1000);

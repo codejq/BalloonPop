@@ -1,0 +1,38 @@
+name: Deploy web game to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'BalloonPop/src/main/assets/www/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build site (only the files the web game uses)
+        run: |
+          WWW=BalloonPop/src/main/assets/www
+          mkdir -p _site/assets/Resource/Sounds
+          cp $WWW/index.html $WWW/app.js $WWW/celebrate.js $WWW/style.css $WWW/celebrate.css $WWW/favicon.ico _site/
+          cp $WWW/assets/clouds.jpg _site/assets/
+          cp $WWW/assets/Resource/Sounds/{popup.wav,dino.mp3,evil.wav} _site/assets/Resource/Sounds/
+          touch _site/.nojekyll
+
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
