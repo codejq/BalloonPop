@@ -54,6 +54,14 @@ python3 tools/generate_voices.py --only fr  # just one
 
 All sound effects are synthesised in code with the Web Audio API, and all artwork is SVG drawn in code, so the game has no third-party image or sound files.
 
+**Custom balloon sounds.** To use your own pop, heart-balloon or evil-balloon sounds, put audio files you have the rights to in `www/sounds/` and list them in [`www/sounds/sounds.js`](BalloonPop/src/main/assets/www/sounds/sounds.js):
+
+```js
+window.CUSTOM_SOUNDS = { pop: 'sounds/pop.mp3', heart: 'sounds/heart.mp3', evil: 'sounds/evil.mp3' };
+```
+
+Any sound you leave out uses the built-in one. Files are decoded once and cached offline.
+
 ## 🤖 Let AI agents play
 
 LLM agents (Claude computer use, browser-use, Playwright MCP and others) can play every mode. Their instructions live at [`/llms.txt`](https://codejq.github.io/BalloonPop/llms.txt).

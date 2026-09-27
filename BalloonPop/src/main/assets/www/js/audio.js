@@ -68,7 +68,33 @@
     src.stop(t + dur);
   }
 
+  // Custom sound files from sounds/sounds.js override the synthesised pop / heart / evil sounds.
+  const custom = window.CUSTOM_SOUNDS || {};
+  function playFile(name) {
+    const url = custom[name];
+    if (!url || !settings.sound) return false;
+    load(url).then(function (clip) {
+      if (clip instanceof AudioBuffer) {
+        const src = ctx.createBufferSource();
+        src.buffer = clip;
+        src.connect(master);
+        src.start();
+      } else {
+        const a = clip.cloneNode();   // clones let quick pops overlap
+        a.volume = 0.6;
+        a.play().catch(function () {});
+      }
+    });
+    return true;
+  }
+
   const Sfx = {
+    // The sound for popping one balloon: a custom file if configured, otherwise synthesised.
+    balloon: function (kind) {
+      if (kind === 'evil') { if (!playFile('evil')) { Sfx.pop(); Sfx.evil(); } }
+      else if (kind === 'heart') { if (!playFile('heart')) { Sfx.pop(); Sfx.heart(); } }
+      else if (!playFile('pop')) Sfx.pop();
+    },
     pop: function () {
       noise(0.12, 2600 + Math.random() * 1200, 0.9);
       tone({ from: 700 + Math.random() * 300, to: 180, dur: 0.09, vol: 0.25, type: 'triangle' });
@@ -245,6 +271,9 @@
       if (window.android && window.android.stopSpeaking) { try { window.android.stopSpeaking(); } catch (e) {} }
     }
   };
+
+  // Decode custom sounds early so the first pop plays without delay.
+  ['pop', 'heart', 'evil'].forEach(function (n) { if (custom[n]) load(custom[n]); });
 
   window.GameAudio = { Sfx: Sfx, Voice: Voice, settings: settings, unlock: ac };
 })();

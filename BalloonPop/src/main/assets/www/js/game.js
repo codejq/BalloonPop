@@ -314,12 +314,12 @@
     setTimeout(function () { el.remove(); }, 500);
     const hex = data.kind === 'evil' ? '#dc2626' : data.kind === 'heart' ? '#ec4899' : Art.COLORS[data.color];
     burst(x, y, hex);
-    Sfx.pop();
+    Sfx.balloon(data.kind);
     let result = { type: data.kind, points: 0 };
 
     if (G.mode === 'freeplay') {
-      if (data.kind === 'evil') { G.score -= 10; Sfx.evil(); floatText(x, y, '-10', true); shakeStage(); result.points = -10; }
-      else if (data.kind === 'heart') { G.score += 5; Sfx.heart(); floatText(x, y, '+5 ♥'); result.points = 5; }
+      if (data.kind === 'evil') { G.score -= 10; floatText(x, y, '-10', true); shakeStage(); result.points = -10; }
+      else if (data.kind === 'heart') { G.score += 5; floatText(x, y, '+5 ♥'); result.points = 5; }
       else { G.score += 1; floatText(x, y, '+1'); result.points = 1; }
       G.popped++;
       renderStats();
