@@ -6,13 +6,17 @@ A cheerful balloon-popping game for kids that teaches **colors, shapes, numbers 
 
 ![Home screen](docs/screenshots/home.png)
 
-## 📲 Install it on your phone
+## Install it on your phone
 
-Balloon Pop installs like an app, with its own icon, full screen and offline play:
+Balloon Pop installs like an app, with its own icon, full screen and offline play. On phones and tablets a popup offers it a moment after the game opens:
 
-- **Android** (Chrome, Edge, Samsung Internet): tap **📲 Install app** on the home screen, or use the browser menu's **Install app / Add to Home screen**.
-- **iPhone / iPad** (Safari): tap **📲 Install app** for step-by-step help: tap **Share**, choose **Add to Home Screen**, then **Add**.
-- **Desktop** (Chrome, Edge): use the install icon in the address bar.
+- **Install**: on Android (Chrome, Edge, Samsung Internet) this opens the phone's install prompt. On iPhone and iPad it shows the steps: tap **Share**, choose **Add to Home Screen**, then **Add**.
+- **Later**: asks again in 3 days.
+- **No thanks**: never asks again.
+
+The popup never interrupts a game, and never appears once the game is installed, in agent mode or in automated browsers. You can always install from **⚙️ Settings → Install app**, and on desktop Chrome or Edge from the install icon in the address bar.
+
+![Install popup](docs/screenshots/install-popup.png)
 
 ## Game modes
 
