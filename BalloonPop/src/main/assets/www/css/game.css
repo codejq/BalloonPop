@@ -121,6 +121,8 @@ h1 {
 .install-ask .install-intro { text-align: start; font-size: 15px; margin-top: 2px; }
 .install-ask-row { display: flex; gap: 10px; }
 .install-ask-row .btn { flex: 1; }
+#btn-ask-install, #btn-install { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-icon { width: 1.15em; height: 1.15em; flex: none; }
 .btn.link { background: transparent; box-shadow: none; color: var(--ink-soft); font-size: 18px; }
 .btn.link:active { transform: none; box-shadow: none; }
 .panel.install-panel { text-align: start; }

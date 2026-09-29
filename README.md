@@ -6,7 +6,7 @@ A cheerful balloon-popping game for kids that teaches **colors, shapes, numbers 
 
 ![Home screen](docs/screenshots/home.png)
 
-## 📲 Install it on your phone
+## Install it on your phone
 
 Balloon Pop installs like an app, with its own icon, full screen and offline play. On phones and tablets a popup offers it a moment after the game opens:
 
