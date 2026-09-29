@@ -52,7 +52,6 @@
         <p class="tagline" data-i18n="tagline">Pop, play and learn!</p>
       </header>
       <div class="mode-grid" id="modes"></div>
-      <button class="install-btn" id="btn-install" hidden><span aria-hidden="true">📲</span> <span data-i18n="install">Install app</span></button>
     </section>
 
     <!-- Level select -->
@@ -128,8 +127,27 @@
           <button data-speed="fast" data-i18n="fast" role="radio">Fast</button>
         </div>
       </div>
+      <button class="btn" id="btn-install" hidden><span aria-hidden="true">📲</span> <span data-i18n="install">Install app</span></button>
       <button class="btn primary" id="btn-settings-close" data-i18n="close">Close</button>
       <p class="powered-by"><span data-i18n="poweredBy">Powered by</span> <a href="https://quantum-billing.com/" target="_blank" rel="noopener">quantum-billing.com</a></p>
+    </div>
+  </div>
+
+  <!-- Install popup on phones/tablets: Install / Later / No thanks -->
+  <div class="overlay sheet" id="overlay-install-ask" hidden>
+    <div class="panel install-ask" role="dialog" aria-modal="true" aria-labelledby="install-ask-title">
+      <div class="install-ask-head">
+        <img class="install-icon" src="icons/apple-touch-icon.png" alt="" width="64" height="64">
+        <div>
+          <h2 id="install-ask-title" data-i18n="installAsk">Install Balloon Pop?</h2>
+          <p class="install-intro" data-i18n="installIntro">Add Balloon Pop to your home screen and play full screen, even offline.</p>
+        </div>
+      </div>
+      <button class="btn primary" id="btn-ask-install"><span aria-hidden="true">📲</span> <span data-i18n="installNow">Install</span></button>
+      <div class="install-ask-row">
+        <button class="btn" id="btn-ask-later" data-i18n="later">Later</button>
+        <button class="btn link" id="btn-ask-never" data-i18n="noThanks">No thanks</button>
+      </div>
     </div>
   </div>
 

@@ -238,6 +238,24 @@
     Object.assign(LANGS[k].ui, { install: v[0], installIntro: v[1], iosStep1: v[2], iosStep2: v[3], iosStep3: v[4] });
   });
 
+  // Install popup: title, install, later, no thanks
+  const ASK = {
+    en: ['Install Balloon Pop?', 'Install', 'Later', 'No thanks'],
+    es: ['¿Instalar Balloon Pop?', 'Instalar', 'Más tarde', 'No, gracias'],
+    fr: ['Installer Balloon Pop ?', 'Installer', 'Plus tard', 'Non merci'],
+    de: ['Balloon Pop installieren?', 'Installieren', 'Später', 'Nein danke'],
+    it: ['Installare Balloon Pop?', 'Installa', 'Più tardi', 'No, grazie'],
+    pt: ['Instalar o Balloon Pop?', 'Instalar', 'Mais tarde', 'Não, obrigado'],
+    nl: ['Balloon Pop installeren?', 'Installeren', 'Later', 'Nee, bedankt'],
+    sv: ['Installera Balloon Pop?', 'Installera', 'Senare', 'Nej tack'],
+    ru: ['Установить Balloon Pop?', 'Установить', 'Позже', 'Нет, спасибо'],
+    id: ['Pasang Balloon Pop?', 'Pasang', 'Nanti', 'Tidak, terima kasih'],
+    ar: ['تثبيت Balloon Pop؟', 'تثبيت', 'لاحقًا', 'لا، شكرًا']
+  };
+  Object.keys(ASK).forEach(function (k) {
+    Object.assign(LANGS[k].ui, { installAsk: ASK[k][0], installNow: ASK[k][1], later: ASK[k][2], noThanks: ASK[k][3] });
+  });
+
   const POWERED_BY = { en: 'Powered by', es: 'Desarrollado por', fr: 'Propulsé par', de: 'Bereitgestellt von', it: 'Realizzato da',
     pt: 'Desenvolvido por', nl: 'Mogelijk gemaakt door', sv: 'Drivs av', ru: 'Работает на', id: 'Didukung oleh', ar: 'مدعوم من' };
   Object.keys(POWERED_BY).forEach(function (k) { LANGS[k].ui.poweredBy = POWERED_BY[k]; });
